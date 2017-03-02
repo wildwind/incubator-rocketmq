@@ -63,6 +63,7 @@ import org.apache.rocketmq.common.protocol.body.ConsumerRunningInfo;
 import org.apache.rocketmq.common.protocol.body.GroupList;
 import org.apache.rocketmq.common.protocol.body.KVTable;
 import org.apache.rocketmq.common.protocol.body.ProducerConnection;
+import org.apache.rocketmq.common.protocol.body.ProducerGroup;
 import org.apache.rocketmq.common.protocol.body.QueueTimeSpan;
 import org.apache.rocketmq.common.protocol.body.SubscriptionGroupWrapper;
 import org.apache.rocketmq.common.protocol.body.TopicConfigSerializeWrapper;
@@ -879,6 +880,12 @@ public class DefaultMQAdminExtImpl implements MQAdminExt, MQAdminExtInner {
     public SubscriptionGroupWrapper getAllSubscriptionGroup(final String brokerAddr, long timeoutMillis) throws InterruptedException,
         RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException, MQBrokerException {
         return this.mqClientInstance.getMQClientAPIImpl().getAllSubscriptionGroup(brokerAddr, timeoutMillis);
+    }
+    
+    @Override
+    public ProducerGroup getAllProducerGroup(String brokerAddr, long timeoutMillis) throws InterruptedException,
+        RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException, MQBrokerException {
+        return this.mqClientInstance.getMQClientAPIImpl().getAllProducerGroup(brokerAddr, timeoutMillis);
     }
 
     @Override

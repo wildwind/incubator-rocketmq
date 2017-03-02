@@ -56,6 +56,7 @@ import org.apache.rocketmq.common.protocol.body.KVTable;
 import org.apache.rocketmq.common.protocol.body.LockBatchRequestBody;
 import org.apache.rocketmq.common.protocol.body.LockBatchResponseBody;
 import org.apache.rocketmq.common.protocol.body.ProducerConnection;
+import org.apache.rocketmq.common.protocol.body.ProducerGroup;
 import org.apache.rocketmq.common.protocol.body.QueryConsumeTimeSpanBody;
 import org.apache.rocketmq.common.protocol.body.QueryCorrectionOffsetBody;
 import org.apache.rocketmq.common.protocol.body.QueueTimeSpan;
@@ -145,6 +146,8 @@ public class AdminBrokerProcessor implements NettyRequestProcessor {
                 return this.updateAndCreateSubscriptionGroup(ctx, request);
             case RequestCode.GET_ALL_SUBSCRIPTIONGROUP_CONFIG:
                 return this.getAllSubscriptionGroup(ctx, request);
+            case RequestCode.GET_ALL_PRODUCER_GROUP:
+                return this.getAllProducerGroup(ctx, request);
             case RequestCode.DELETE_SUBSCRIPTIONGROUP:
                 return this.deleteSubscriptionGroup(ctx, request);
             case RequestCode.GET_TOPIC_STATS_INFO:
@@ -485,6 +488,32 @@ public class AdminBrokerProcessor implements NettyRequestProcessor {
         response.setCode(ResponseCode.SUCCESS);
         response.setRemark(null);
 
+        return response;
+    }
+    
+    
+    private RemotingCommand getAllProducerGroup(ChannelHandlerContext ctx, RemotingCommand request)
+        throws RemotingCommandException {
+        final RemotingCommand response = RemotingCommand.createResponseCommand(null);
+        HashMap<String, HashMap<Channel, ClientChannelInfo>> producerConfig = this.brokerController.getProducerManager().getGroupChannelTable();
+        ProducerGroup producerGroups = new ProducerGroup();
+        if (producerConfig != null) {
+            Iterator<Map.Entry<String, HashMap<Channel, ClientChannelInfo>>> entry = producerConfig.entrySet().iterator();
+            while (entry.hasNext()) {
+                Map.Entry<String, HashMap<Channel, ClientChannelInfo>> next = entry.next();
+                String producerGroup = next.getKey();
+                if (!MixAll.CLIENT_INNER_PRODUCER_GROUP.equals(producerGroup)) {
+                    producerGroups.getProducerGroup().add(producerGroup);
+                }
+            }
+            byte[] body = producerGroups.encode();
+            response.setBody(body);
+            response.setCode(ResponseCode.SUCCESS);
+            response.setRemark(null);
+        } else {
+            response.setCode(ResponseCode.SYSTEM_ERROR);
+            response.setRemark("No producer group in this broker");
+        }
         return response;
     }
 

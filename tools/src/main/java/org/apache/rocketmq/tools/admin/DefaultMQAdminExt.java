@@ -41,6 +41,7 @@ import org.apache.rocketmq.common.protocol.body.ConsumerRunningInfo;
 import org.apache.rocketmq.common.protocol.body.GroupList;
 import org.apache.rocketmq.common.protocol.body.KVTable;
 import org.apache.rocketmq.common.protocol.body.ProducerConnection;
+import org.apache.rocketmq.common.protocol.body.ProducerGroup;
 import org.apache.rocketmq.common.protocol.body.QueueTimeSpan;
 import org.apache.rocketmq.common.protocol.body.SubscriptionGroupWrapper;
 import org.apache.rocketmq.common.protocol.body.TopicConfigSerializeWrapper;
@@ -417,6 +418,12 @@ public class DefaultMQAdminExt extends ClientConfig implements MQAdminExt {
     }
 
     @Override
+    public ProducerGroup getAllProducerGroup(String brokerAddr, long timeoutMillis) throws InterruptedException,
+        RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException, MQBrokerException {
+        return this.defaultMQAdminExtImpl.getAllProducerGroup(brokerAddr, timeoutMillis);
+    }
+    
+    @Override
     public TopicConfigSerializeWrapper getAllTopicGroup(final String brokerAddr,
         long timeoutMillis) throws InterruptedException, RemotingTimeoutException, RemotingSendRequestException,
         RemotingConnectException, MQBrokerException {
@@ -469,4 +476,5 @@ public class DefaultMQAdminExt extends ClientConfig implements MQAdminExt {
         UnsupportedEncodingException {
         return this.defaultMQAdminExtImpl.getNameServerConfig(nameServers);
     }
+
 }
