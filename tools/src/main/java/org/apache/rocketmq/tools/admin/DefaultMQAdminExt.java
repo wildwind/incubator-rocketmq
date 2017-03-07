@@ -229,6 +229,12 @@ public class DefaultMQAdminExt extends ClientConfig implements MQAdminExt {
         MQClientException, InterruptedException, MQBrokerException {
         return defaultMQAdminExtImpl.examineProducerConnectionInfo(producerGroup, topic);
     }
+    
+    @Override
+    public ProducerConnection examineProducerConnectionInfoByAddressAndGroup(String brokerAddress,String producerGroup) throws RemotingException,
+    MQClientException, InterruptedException, MQBrokerException {
+        return defaultMQAdminExtImpl.examineProducerConnectionInfoByAddressAndGroup(brokerAddress, producerGroup);
+    }
 
     @Override
     public List<String> getNameServerAddressList() {
@@ -476,5 +482,6 @@ public class DefaultMQAdminExt extends ClientConfig implements MQAdminExt {
         UnsupportedEncodingException {
         return this.defaultMQAdminExtImpl.getNameServerConfig(nameServers);
     }
+
 
 }

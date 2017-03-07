@@ -330,6 +330,18 @@ public class DefaultMQAdminExtImpl implements MQAdminExt, MQAdminExtInner {
 
         return result;
     }
+    
+    @Override
+    public ProducerConnection examineProducerConnectionInfoByAddressAndGroup(String brokerAddress,String producerGroup)throws RemotingException, 
+        MQClientException, InterruptedException, MQBrokerException {
+        ProducerConnection result = new ProducerConnection();
+        result = this.mqClientInstance.getMQClientAPIImpl().getProducerConnectionList(brokerAddress, producerGroup, timeoutMillis);
+        if (result.getConnectionSet().isEmpty()) {
+            log.warn("the producer group not online. brokerAddr={}, group={}", brokerAddress, producerGroup);
+            throw new MQClientException("Not found the producer group connection", null);
+        }
+        return result;
+    }
 
     @Override
     public List<String> getNameServerAddressList() {
@@ -961,5 +973,6 @@ public class DefaultMQAdminExtImpl implements MQAdminExt, MQAdminExtInner {
         UnsupportedEncodingException {
         return this.mqClientInstance.getMQClientAPIImpl().getNameServerConfig(nameServers, timeoutMillis);
     }
+
 
 }

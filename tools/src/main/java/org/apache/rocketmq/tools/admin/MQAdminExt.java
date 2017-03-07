@@ -102,6 +102,12 @@ public interface MQAdminExt extends MQAdmin {
 
     ProducerConnection examineProducerConnectionInfo(final String producerGroup, final String topic) throws RemotingException,
         MQClientException, InterruptedException, MQBrokerException;
+    
+    /**
+     * m-ning
+     * */
+    ProducerConnection examineProducerConnectionInfoByAddressAndGroup(String brokerAddress,String producerGroup) throws RemotingException,
+    MQClientException, InterruptedException, MQBrokerException;
 
     List<String> getNameServerAddressList();
 
