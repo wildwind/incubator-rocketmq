@@ -223,6 +223,13 @@ public class DefaultMQAdminExt extends ClientConfig implements MQAdminExt {
         RemotingException, MQClientException {
         return defaultMQAdminExtImpl.examineConsumerConnectionInfo(consumerGroup);
     }
+    
+    @Override
+    public ConsumerConnection examineConsumerConnectionInfoByAddressAndGroup(String brokerAddress, String consumerGroup)
+            throws RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException,
+            InterruptedException, MQBrokerException, RemotingException, MQClientException {
+        return defaultMQAdminExtImpl.examineConsumerConnectionInfoByAddressAndGroup(brokerAddress,consumerGroup);
+    }
 
     @Override
     public ProducerConnection examineProducerConnectionInfo(String producerGroup, final String topic) throws RemotingException,

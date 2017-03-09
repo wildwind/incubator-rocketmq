@@ -308,6 +308,22 @@ public class DefaultMQAdminExtImpl implements MQAdminExt, MQAdminExtInner {
 
         return result;
     }
+    
+    @Override
+    public ConsumerConnection examineConsumerConnectionInfoByAddressAndGroup(String brokerAddress, String consumerGroup)
+           throws RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException,
+            InterruptedException, MQBrokerException, RemotingException, MQClientException {
+        ConsumerConnection result = new ConsumerConnection();
+        if (StringUtils.isNotBlank(brokerAddress)) {
+            result = this.mqClientInstance.getMQClientAPIImpl().getConsumerConnectionList(brokerAddress, consumerGroup, timeoutMillis);
+        }
+        if (result.getConnectionSet().isEmpty()) {
+            log.warn("the consumer group not online. brokerAddr={}, group={}", brokerAddress, consumerGroup);
+            throw new MQClientException(ResponseCode.CONSUMER_NOT_ONLINE, "Not found the consumer group connection");
+        }
+        return result;
+    }
+
 
     @Override
     public ProducerConnection examineProducerConnectionInfo(String producerGroup, final String topic) throws RemotingException,

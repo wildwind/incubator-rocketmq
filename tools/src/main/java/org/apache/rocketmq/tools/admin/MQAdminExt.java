@@ -99,6 +99,8 @@ public interface MQAdminExt extends MQAdmin {
     ConsumerConnection examineConsumerConnectionInfo(final String consumerGroup) throws RemotingConnectException,
         RemotingSendRequestException, RemotingTimeoutException, InterruptedException, MQBrokerException, RemotingException,
         MQClientException;
+    
+    ConsumerConnection examineConsumerConnectionInfoByAddressAndGroup(String brokerAddress,String consumerGroup) throws RemotingConnectException,RemotingSendRequestException, RemotingTimeoutException, InterruptedException, MQBrokerException, RemotingException,MQClientException;
 
     ProducerConnection examineProducerConnectionInfo(final String producerGroup, final String topic) throws RemotingException,
         MQClientException, InterruptedException, MQBrokerException;
