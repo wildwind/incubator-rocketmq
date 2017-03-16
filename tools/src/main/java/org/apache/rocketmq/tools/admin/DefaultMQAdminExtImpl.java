@@ -371,9 +371,8 @@ public class DefaultMQAdminExtImpl implements MQAdminExt, MQAdminExtInner {
     }
 
     @Override
-    public void putKVConfig(String namespace, String key, String value) {
-        // TODO Auto-generated method stub
-
+    public void putKVConfig(String namespace, String key, String value) throws RemotingException, MQClientException, InterruptedException  {
+        this.mqClientInstance.getMQClientAPIImpl().putKVConfigValue(namespace, key, value,timeoutMillis);
     }
 
     @Override
