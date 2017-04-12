@@ -41,6 +41,7 @@ import org.apache.rocketmq.common.admin.OffsetWrapper;
 import org.apache.rocketmq.common.admin.TopicOffset;
 import org.apache.rocketmq.common.admin.TopicStatsTable;
 import org.apache.rocketmq.common.constant.LoggerName;
+import org.apache.rocketmq.common.constant.PermName;
 import org.apache.rocketmq.common.message.MessageDecoder;
 import org.apache.rocketmq.common.message.MessageId;
 import org.apache.rocketmq.common.message.MessageQueue;
@@ -91,10 +92,13 @@ import org.apache.rocketmq.common.protocol.header.SearchOffsetResponseHeader;
 import org.apache.rocketmq.common.protocol.header.ViewBrokerStatsDataRequestHeader;
 import org.apache.rocketmq.common.protocol.header.filtersrv.RegisterFilterServerRequestHeader;
 import org.apache.rocketmq.common.protocol.header.filtersrv.RegisterFilterServerResponseHeader;
+import org.apache.rocketmq.common.protocol.heartbeat.ConsumerData;
 import org.apache.rocketmq.common.protocol.heartbeat.SubscriptionData;
+import org.apache.rocketmq.common.protocol.topic.TopicSubscriptionData;
 import org.apache.rocketmq.common.stats.StatsItem;
 import org.apache.rocketmq.common.stats.StatsSnapshot;
 import org.apache.rocketmq.common.subscription.SubscriptionGroupConfig;
+import org.apache.rocketmq.common.sysflag.TopicSysFlag;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.apache.rocketmq.remoting.exception.RemotingCommandException;
 import org.apache.rocketmq.remoting.exception.RemotingTimeoutException;
@@ -190,6 +194,8 @@ public class AdminBrokerProcessor implements NettyRequestProcessor {
                 return ViewBrokerStatsData(ctx, request);
             case RequestCode.GET_BROKER_CONSUME_STATS:
                 return fetchAllConsumeStatsInBroker(ctx, request);
+            case RequestCode.UPDATE_AND_CREATE_TOPIC_SUBSCRIPTION:
+                return this.addOrUpdateTopicSubcription(ctx, request);
             default:
                 break;
         }
@@ -1269,6 +1275,45 @@ public class AdminBrokerProcessor implements NettyRequestProcessor {
                 String.format("invoke consumer <%s> <%s> Exception: %s", consumerGroup, clientId, RemotingHelper.exceptionSimpleDesc(e)));
             return response;
         }
+    }
+    
+    //XXX wildwind for updateAndCreateTopicSubscription
+    public RemotingCommand addOrUpdateTopicSubcription(ChannelHandlerContext ctx, RemotingCommand request)
+           throws RemotingCommandException {
+        RemotingCommand response = RemotingCommand.createResponseCommand(null);
+        TopicSubscriptionData topicSubscriptionData = TopicSubscriptionData.decode(request.getBody(), TopicSubscriptionData.class);
+        
+
+//        for (ConsumerData data : topicSubscriptionData.getConsumerDataSet()) {
+//            SubscriptionGroupConfig subscriptionGroupConfig =
+//                this.brokerController.getSubscriptionGroupManager().findSubscriptionGroupConfig(
+//                    data.getGroupName());
+//            if (null != subscriptionGroupConfig) {
+//                int topicSysFlag = 0;
+//                if (data.isUnitMode()) {
+//                    topicSysFlag = TopicSysFlag.buildSysFlag(false, true);
+//                }
+//                String newTopic = MixAll.getRetryTopic(data.getGroupName());
+//                this.brokerController.getTopicConfigManager().createTopicInSendMessageBackMethod(
+//                    newTopic,
+//                    subscriptionGroupConfig.getRetryQueueNums(),
+//                    PermName.PERM_WRITE | PermName.PERM_READ, topicSysFlag);
+//            }
+//            
+//            
+//
+//            boolean success = this.brokerController.getConsumerManager().addOrUpdateTopicSubcription(data.getGroupName(),data.getSubscriptionDataSet());
+//
+//            if (success) {
+//                log.info("add topic subscription info success {}",
+//                    data.toString()
+//                );
+//            }
+//        }
+
+        response.setCode(ResponseCode.SUCCESS);
+        response.setRemark(null);
+        return response;
     }
 
 }

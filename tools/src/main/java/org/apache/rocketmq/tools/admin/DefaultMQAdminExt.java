@@ -490,5 +490,12 @@ public class DefaultMQAdminExt extends ClientConfig implements MQAdminExt {
         return this.defaultMQAdminExtImpl.getNameServerConfig(nameServers);
     }
 
+    @Override
+    public void addOrUpdateTopicSubscriptionInfoToAllBroker(Set<String> topics, String group)
+            throws InterruptedException, RemotingTimeoutException, RemotingSendRequestException,
+            RemotingConnectException, MQBrokerException {
+        this.defaultMQAdminExtImpl.addOrUpdateTopicSubscriptionInfoToAllBroker(topics, group);
+    }
+
 
 }

@@ -83,7 +83,6 @@ public class RequestCode {
     public static final int UPDATE_AND_CREATE_SUBSCRIPTIONGROUP = 200;
     public static final int GET_ALL_SUBSCRIPTIONGROUP_CONFIG = 201;
     
-    public static final int GET_ALL_PRODUCER_GROUP = 2011;
     public static final int GET_TOPIC_STATS_INFO = 202;
     public static final int GET_CONSUMER_CONNECTION_LIST = 203;
     public static final int GET_PRODUCER_CONNECTION_LIST = 204;
@@ -161,4 +160,8 @@ public class RequestCode {
      * get config from name server
      */
     public static final int GET_NAMESRV_CONFIG = 319;
+    
+    
+    public static final int GET_ALL_PRODUCER_GROUP = 2011;
+    public static final int UPDATE_AND_CREATE_TOPIC_SUBSCRIPTION = 2012;
 }

@@ -910,12 +910,7 @@ public class DefaultMQAdminExtImpl implements MQAdminExt, MQAdminExtInner {
         return this.mqClientInstance.getMQClientAPIImpl().getAllSubscriptionGroup(brokerAddr, timeoutMillis);
     }
     
-    @Override
-    public ProducerGroup getAllProducerGroup(String brokerAddr, long timeoutMillis) throws InterruptedException,
-        RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException, MQBrokerException {
-        return this.mqClientInstance.getMQClientAPIImpl().getAllProducerGroup(brokerAddr, timeoutMillis);
-    }
-
+   
     @Override
     public TopicConfigSerializeWrapper getAllTopicGroup(final String brokerAddr, long timeoutMillis) throws InterruptedException,
         RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException, MQBrokerException {
@@ -990,5 +985,16 @@ public class DefaultMQAdminExtImpl implements MQAdminExt, MQAdminExtInner {
         return this.mqClientInstance.getMQClientAPIImpl().getNameServerConfig(nameServers, timeoutMillis);
     }
 
+    @Override
+    public ProducerGroup getAllProducerGroup(String brokerAddr, long timeoutMillis) throws InterruptedException,
+        RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException, MQBrokerException {
+        return this.mqClientInstance.getMQClientAPIImpl().getAllProducerGroup(brokerAddr, timeoutMillis);
+    }
 
+    
+    @Override
+    public void addOrUpdateTopicSubscriptionInfoToAllBroker(Set<String> topics,String group) throws InterruptedException,
+        RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException, MQBrokerException {
+        this.mqClientInstance.sendAddOrUpdateTopicSubscriptionInfoToAllBroker(topics, group);
+    }
 }

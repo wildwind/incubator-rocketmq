@@ -50,6 +50,10 @@ public class ConsumerGroupInfo {
         this.messageModel = messageModel;
         this.consumeFromWhere = consumeFromWhere;
     }
+    //for topic subscription info
+    public ConsumerGroupInfo(String groupName) {
+            this.groupName = groupName;
+    }
 
     public ClientChannelInfo findChannel(final String clientId) {
         Iterator<Entry<Channel, ClientChannelInfo>> it = this.channelInfoTable.entrySet().iterator();

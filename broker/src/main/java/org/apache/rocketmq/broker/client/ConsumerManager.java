@@ -107,6 +107,7 @@ public class ConsumerManager {
         boolean r1 =
             consumerGroupInfo.updateChannel(clientChannelInfo, consumeType, messageModel,
                 consumeFromWhere);
+        //TODO forbid heartbeat to add topic subscription info
         boolean r2 = consumerGroupInfo.updateSubscription(subList);
 
         if (r1 || r2) {
@@ -178,5 +179,17 @@ public class ConsumerManager {
             }
         }
         return groups;
+    }
+    //XXX wildwind for topic and subscription relationship
+    public boolean addOrUpdateTopicSubcription(final String group,final Set<SubscriptionData> subList) {
+        ConsumerGroupInfo consumerGroupInfo = this.consumerTable.get(group);
+        if (null == consumerGroupInfo) {
+            ConsumerGroupInfo tmp = new ConsumerGroupInfo(group);
+            ConsumerGroupInfo prev = this.consumerTable.putIfAbsent(group, tmp);
+            consumerGroupInfo = prev != null ? prev : tmp;
+        }
+        
+        boolean r = consumerGroupInfo.updateSubscription(subList);
+        return r;
     }
 }

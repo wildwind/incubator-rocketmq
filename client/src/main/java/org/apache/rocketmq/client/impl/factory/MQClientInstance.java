@@ -73,6 +73,7 @@ import org.apache.rocketmq.common.protocol.heartbeat.SubscriptionData;
 import org.apache.rocketmq.common.protocol.route.BrokerData;
 import org.apache.rocketmq.common.protocol.route.QueueData;
 import org.apache.rocketmq.common.protocol.route.TopicRouteData;
+import org.apache.rocketmq.common.protocol.topic.TopicSubscriptionData;
 import org.apache.rocketmq.remoting.RPCHook;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.apache.rocketmq.remoting.exception.RemotingException;
@@ -1153,5 +1154,52 @@ public class MQClientInstance {
 
     public NettyClientConfig getNettyClientConfig() {
         return nettyClientConfig;
+    }
+    
+    //XXX add by wildwind
+    public void sendAddOrUpdateTopicSubscriptionInfoToAllBroker(final Set<String> topics,final String group) {
+        final TopicSubscriptionData topicSubscriptionData = new TopicSubscriptionData();
+        ConsumerData consumerData = new ConsumerData();
+        consumerData.setGroupName(group);
+        
+        Iterator<String> iter = topics.iterator();
+        while (iter.hasNext()) {
+            String topic = iter.next();
+            SubscriptionData subscriptionData=new SubscriptionData();
+            subscriptionData.setTopic(topic);
+            consumerData.getSubscriptionDataSet().add(subscriptionData);
+        }
+
+        topicSubscriptionData.getConsumerDataSet().add(consumerData);
+        
+
+        Iterator<Entry<String, HashMap<Long, String>>> it = this.brokerAddrTable.entrySet().iterator();
+        while (it.hasNext()) {
+            Entry<String, HashMap<Long, String>> entry = it.next();
+            String brokerName = entry.getKey();
+            HashMap<Long, String> oneTable = entry.getValue();
+            if (oneTable != null) {
+                for (Map.Entry<Long, String> entry1 : oneTable.entrySet()) {
+                    Long id = entry1.getKey();
+                    String addr = entry1.getValue();
+                    if (addr != null) {
+                        if (id != MixAll.MASTER_ID) {
+                            continue;
+                        }
+
+                        try {
+                            this.mQClientAPIImpl.addOrUpdateTopicSubcription(addr, topicSubscriptionData, 30000);
+                        } catch (Exception e) {
+                            if (this.isBrokerInNameServer(addr)) {
+                                log.error("send addOrUpdateTopicSubscriptionInfo to broker exception", e);
+                            } else {
+                                log.info("send addOrUpdateTopicSubscriptionInfo to broker[{} {} {}] exception, because the broker not up, forget it", brokerName,
+                                    id, addr);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

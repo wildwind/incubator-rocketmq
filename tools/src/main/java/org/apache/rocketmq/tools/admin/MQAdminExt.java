@@ -255,4 +255,7 @@ public interface MQAdminExt extends MQAdmin {
     Map<String, Properties> getNameServerConfig(final List<String> nameServers) throws InterruptedException,
         RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException,
         MQClientException, UnsupportedEncodingException;
+
+    void addOrUpdateTopicSubscriptionInfoToAllBroker(Set<String> topics, String group) throws InterruptedException,
+            RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException, MQBrokerException;
 }

@@ -130,6 +130,7 @@ import org.apache.rocketmq.common.protocol.header.namesrv.WipeWritePermOfBrokerR
 import org.apache.rocketmq.common.protocol.header.namesrv.WipeWritePermOfBrokerResponseHeader;
 import org.apache.rocketmq.common.protocol.heartbeat.HeartbeatData;
 import org.apache.rocketmq.common.protocol.route.TopicRouteData;
+import org.apache.rocketmq.common.protocol.topic.TopicSubscriptionData;
 import org.apache.rocketmq.common.subscription.SubscriptionGroupConfig;
 import org.apache.rocketmq.remoting.InvokeCallback;
 import org.apache.rocketmq.remoting.RPCHook;
@@ -2023,5 +2024,26 @@ public class MQClientAPIImpl {
         }
         return configMap;
     }
+    //XXX add by wildwind for topic
+    public void addOrUpdateTopicSubcription(//
+            final String addr, //
+            final TopicSubscriptionData topicSubscriptionData, //
+            final long timeoutMillis//
+        ) throws RemotingException, MQBrokerException, InterruptedException {
+            RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.UPDATE_AND_CREATE_TOPIC_SUBSCRIPTION, null);
+
+            request.setBody(topicSubscriptionData.encode());
+            RemotingCommand response = this.remotingClient.invokeSync(MixAll.brokerVIPChannel(this.clientConfig.isVipChannelEnabled(), addr), request, timeoutMillis);
+            assert response != null;
+            switch (response.getCode()) {
+                case ResponseCode.SUCCESS: {
+                    return;
+                }
+                default:
+                    break;
+            }
+
+            throw new MQBrokerException(response.getCode(), response.getRemark());
+        }
 
 }
