@@ -255,7 +255,7 @@ public class DefaultMQAdminExt extends ClientConfig implements MQAdminExt {
     }
 
     @Override
-    public void putKVConfig(String namespace, String key, String value) {
+    public void putKVConfig(String namespace, String key, String value) throws RemotingException, MQClientException, InterruptedException {
         defaultMQAdminExtImpl.putKVConfig(namespace, key, value);
     }
 
