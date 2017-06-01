@@ -107,7 +107,7 @@ public class ConsumerManager {
         boolean r1 =
             consumerGroupInfo.updateChannel(clientChannelInfo, consumeType, messageModel,
                 consumeFromWhere);
-        //TODO forbid heartbeat to add topic subscription info
+        //test forbid heartbeat to add topic subscription info
         boolean r2 = consumerGroupInfo.updateSubscription(subList);
 
         if (r1 || r2) {

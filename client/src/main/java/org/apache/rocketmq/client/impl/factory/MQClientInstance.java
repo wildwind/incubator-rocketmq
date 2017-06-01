@@ -1165,7 +1165,7 @@ public class MQClientInstance {
         Iterator<String> iter = topics.iterator();
         while (iter.hasNext()) {
             String topic = iter.next();
-            SubscriptionData subscriptionData=new SubscriptionData();
+            SubscriptionData subscriptionData = new SubscriptionData();
             subscriptionData.setTopic(topic);
             consumerData.getSubscriptionDataSet().add(subscriptionData);
         }

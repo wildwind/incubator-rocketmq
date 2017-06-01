@@ -2029,21 +2029,20 @@ public class MQClientAPIImpl {
             final String addr, //
             final TopicSubscriptionData topicSubscriptionData, //
             final long timeoutMillis//
-        ) throws RemotingException, MQBrokerException, InterruptedException {
-            RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.UPDATE_AND_CREATE_TOPIC_SUBSCRIPTION, null);
+    ) throws RemotingException, MQBrokerException, InterruptedException {
+        RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.UPDATE_AND_CREATE_TOPIC_SUBSCRIPTION, null);
 
-            request.setBody(topicSubscriptionData.encode());
-            RemotingCommand response = this.remotingClient.invokeSync(MixAll.brokerVIPChannel(this.clientConfig.isVipChannelEnabled(), addr), request, timeoutMillis);
-            assert response != null;
-            switch (response.getCode()) {
-                case ResponseCode.SUCCESS: {
-                    return;
-                }
-                default:
-                    break;
+        request.setBody(topicSubscriptionData.encode());
+        RemotingCommand response = this.remotingClient.invokeSync(MixAll.brokerVIPChannel(this.clientConfig.isVipChannelEnabled(), addr), request, timeoutMillis);
+        assert response != null;
+        switch (response.getCode()) {
+            case ResponseCode.SUCCESS: {
+                return;
             }
-
-            throw new MQBrokerException(response.getCode(), response.getRemark());
+            default:
+                break;
         }
 
+        throw new MQBrokerException(response.getCode(), response.getRemark());
+    }
 }

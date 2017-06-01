@@ -52,7 +52,7 @@ public class ConsumerGroupInfo {
     }
     //for topic subscription info
     public ConsumerGroupInfo(String groupName) {
-            this.groupName = groupName;
+        this.groupName = groupName;
     }
 
     public ClientChannelInfo findChannel(final String clientId) {
