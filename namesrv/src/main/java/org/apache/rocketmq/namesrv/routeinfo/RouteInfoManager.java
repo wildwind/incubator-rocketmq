@@ -54,6 +54,7 @@ public class RouteInfoManager {
     private final HashMap<String/* clusterName */, Set<String/* brokerName */>> clusterAddrTable;
     private final HashMap<String/* brokerAddr */, BrokerLiveInfo> brokerLiveTable;
     private final HashMap<String/* brokerAddr */, List<String>/* Filter Server */> filterServerTable;
+    private final HashMap<String/*brokerName*/,BrokerData> offLineBrokerList;
 
     public RouteInfoManager() {
         this.topicQueueTable = new HashMap<String, List<QueueData>>(1024);
@@ -61,12 +62,14 @@ public class RouteInfoManager {
         this.clusterAddrTable = new HashMap<String, Set<String>>(32);
         this.brokerLiveTable = new HashMap<String, BrokerLiveInfo>(256);
         this.filterServerTable = new HashMap<String, List<String>>(256);
+        this.offLineBrokerList=new HashMap<String,BrokerData>(128);
     }
 
     public byte[] getAllClusterInfo() {
         ClusterInfo clusterInfoSerializeWrapper = new ClusterInfo();
         clusterInfoSerializeWrapper.setBrokerAddrTable(this.brokerAddrTable);
         clusterInfoSerializeWrapper.setClusterAddrTable(this.clusterAddrTable);
+        clusterInfoSerializeWrapper.setOfflineBrokerList(offLineBrokerList);
         return clusterInfoSerializeWrapper.encode();
     }
 
@@ -134,6 +137,7 @@ public class RouteInfoManager {
                 }
                 String oldAddr = brokerData.getBrokerAddrs().put(brokerId, brokerAddr);
                 registerFirst = registerFirst || (null == oldAddr);
+                this.handleOnlineBroker(brokerName, brokerId, brokerAddr);
 
                 if (null != topicConfigWrapper //
                     && MixAll.MASTER_ID == brokerId) {
@@ -322,6 +326,11 @@ public class RouteInfoManager {
                     }
                     this.removeTopicByBrokerName(brokerName);
                 }
+                
+                
+                //begin for offline broker check
+                this.handleOfflineBroker(brokerName, brokerId, brokerAddr);
+                //end for offline broker check
             } finally {
                 this.lock.writeLock().unlock();
             }
@@ -477,6 +486,9 @@ public class RouteInfoManager {
                             if (brokerAddr.equals(brokerAddrFound)) {
                                 brokerNameFound = brokerData.getBrokerName();
                                 it.remove();
+                                //begin for offline broker check
+                                this.handleOfflineBroker(brokerNameFound, brokerId, brokerAddr);
+                                //end for offline broker check
                                 log.info("remove brokerAddr[{}, {}] from brokerAddrTable, because channel destroyed",
                                     brokerId, brokerAddr);
                                 break;
@@ -735,6 +747,40 @@ public class RouteInfoManager {
         }
 
         return topicList.encode();
+    }
+    
+    private String handleOfflineBroker(String brokerName,Long brokerId,String brokerAddr) {
+        BrokerData allBrokerData = this.offLineBrokerList.get(brokerName);
+        if (null == allBrokerData) {
+            allBrokerData=new BrokerData();
+            allBrokerData.setBrokerName(brokerName);
+            HashMap<Long, String> allBrokerAddrs = new HashMap<Long, String>();
+            allBrokerData.setBrokerAddrs(allBrokerAddrs);
+            this.offLineBrokerList.put(brokerName, allBrokerData);
+        }
+        return allBrokerData.getBrokerAddrs().put(brokerId, brokerAddr);
+    }
+    
+    private int handleOnlineBroker(String brokerName,Long brokerId,String brokerAddr) {
+        try {
+            BrokerData allBrokerData = this.offLineBrokerList.get(brokerName);
+            if (allBrokerData != null) {
+                Iterator<Entry<Long, String>> it = allBrokerData.getBrokerAddrs().entrySet().iterator();
+                while(it.hasNext()) {
+                    Entry<Long, String> entry=it.next();
+                    String address = entry.getValue();
+                    if (brokerAddr.equals(address)) {
+                        it.remove();
+                    }
+                }
+                if(allBrokerData.getBrokerAddrs().isEmpty()) {
+                    offLineBrokerList.remove(brokerName);
+                }
+            }
+        }catch(Exception e){
+            log.error("handleOnlineBroker Exception", e);
+        }
+        return 0;
     }
 }
 

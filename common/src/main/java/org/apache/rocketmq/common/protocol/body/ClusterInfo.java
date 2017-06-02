@@ -27,6 +27,17 @@ import org.apache.rocketmq.remoting.protocol.RemotingSerializable;
 public class ClusterInfo extends RemotingSerializable {
     private HashMap<String/* brokerName */, BrokerData> brokerAddrTable;
     private HashMap<String/* clusterName */, Set<String/* brokerName */>> clusterAddrTable;
+    private HashMap<String/* brokerName */, BrokerData> offlineBrokerList;
+
+    
+
+    public HashMap<String, BrokerData> getOfflineBrokerList() {
+        return offlineBrokerList;
+    }
+
+    public void setOfflineBrokerList(HashMap<String, BrokerData> offlineBrokerList) {
+        this.offlineBrokerList = offlineBrokerList;
+    }
 
     public HashMap<String, BrokerData> getBrokerAddrTable() {
         return brokerAddrTable;
