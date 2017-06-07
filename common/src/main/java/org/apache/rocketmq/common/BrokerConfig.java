@@ -98,6 +98,16 @@ public class BrokerConfig {
     private long startAcceptSendRequestTimeStamp = 0L;
 
     private boolean traceOn = true;
+    
+    private boolean groupTopicCheck = false;
+
+    public boolean isGroupTopicCheck() {
+        return groupTopicCheck;
+    }
+
+    public void setGroupTopicCheck(boolean groupTopicCheck) {
+        this.groupTopicCheck = groupTopicCheck;
+    }
 
     public static String localHostName() {
         try {

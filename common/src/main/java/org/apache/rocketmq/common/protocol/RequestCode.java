@@ -164,4 +164,5 @@ public class RequestCode {
     
     public static final int GET_ALL_PRODUCER_GROUP = 2011;
     public static final int UPDATE_AND_CREATE_TOPIC_SUBSCRIPTION = 2012;
+    public static final int GET_ALL_SUBSCRIPTIONGROUPTOPIC_CONFIG = 2013;
 }

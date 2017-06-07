@@ -43,10 +43,12 @@ import org.apache.rocketmq.common.protocol.body.KVTable;
 import org.apache.rocketmq.common.protocol.body.ProducerConnection;
 import org.apache.rocketmq.common.protocol.body.ProducerGroup;
 import org.apache.rocketmq.common.protocol.body.QueueTimeSpan;
+import org.apache.rocketmq.common.protocol.body.SubscriptionGroupTopicWrapper;
 import org.apache.rocketmq.common.protocol.body.SubscriptionGroupWrapper;
 import org.apache.rocketmq.common.protocol.body.TopicConfigSerializeWrapper;
 import org.apache.rocketmq.common.protocol.body.TopicList;
 import org.apache.rocketmq.common.protocol.route.TopicRouteData;
+import org.apache.rocketmq.common.protocol.topic.TopicSubscriptionData;
 import org.apache.rocketmq.common.subscription.SubscriptionGroupConfig;
 import org.apache.rocketmq.remoting.RPCHook;
 import org.apache.rocketmq.remoting.exception.RemotingCommandException;
@@ -490,11 +492,20 @@ public class DefaultMQAdminExt extends ClientConfig implements MQAdminExt {
         return this.defaultMQAdminExtImpl.getNameServerConfig(nameServers);
     }
 
+
     @Override
-    public void addOrUpdateTopicSubscriptionInfoToAllBroker(Set<String> topics, String group)
-            throws InterruptedException, RemotingTimeoutException, RemotingSendRequestException,
-            RemotingConnectException, MQBrokerException {
-        this.defaultMQAdminExtImpl.addOrUpdateTopicSubscriptionInfoToAllBroker(topics, group);
+    public SubscriptionGroupTopicWrapper getAllSubscriptionGroupTopic(String brokerAddr, long timeoutMillis)
+            throws RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException,
+            InterruptedException, MQBrokerException {
+        return this.defaultMQAdminExtImpl.getAllSubscriptionGroupTopic(brokerAddr, timeoutMillis);
+    }
+
+    @Override
+    public void addOrUpdateTopicSubscriptionInfoToAllBroker(String brokerAddr,
+            TopicSubscriptionData topicSubscriptionData) throws InterruptedException, RemotingTimeoutException,
+            RemotingSendRequestException, RemotingConnectException, MQBrokerException {
+        this.defaultMQAdminExtImpl.addOrUpdateTopicSubscriptionInfoToAllBroker(brokerAddr, topicSubscriptionData);
+        
     }
 
 

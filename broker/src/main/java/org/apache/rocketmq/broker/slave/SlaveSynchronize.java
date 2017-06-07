@@ -17,11 +17,14 @@
 package org.apache.rocketmq.broker.slave;
 
 import java.io.IOException;
+
 import org.apache.rocketmq.broker.BrokerController;
 import org.apache.rocketmq.broker.subscription.SubscriptionGroupManager;
+import org.apache.rocketmq.broker.subscription.SubscriptionGroupTopicManager;
 import org.apache.rocketmq.common.MixAll;
 import org.apache.rocketmq.common.constant.LoggerName;
 import org.apache.rocketmq.common.protocol.body.ConsumerOffsetSerializeWrapper;
+import org.apache.rocketmq.common.protocol.body.SubscriptionGroupTopicWrapper;
 import org.apache.rocketmq.common.protocol.body.SubscriptionGroupWrapper;
 import org.apache.rocketmq.common.protocol.body.TopicConfigSerializeWrapper;
 import org.apache.rocketmq.store.config.StorePathConfigHelper;
@@ -50,6 +53,7 @@ public class SlaveSynchronize {
         this.syncConsumerOffset();
         this.syncDelayOffset();
         this.syncSubscriptionGroupConfig();
+        this.syncSubscriptionGroupTopicConfig();
     }
 
     private void syncTopicConfig() {
@@ -138,6 +142,28 @@ public class SlaveSynchronize {
                 }
             } catch (Exception e) {
                 log.error("SyncSubscriptionGroup Exception, {}", masterAddrBak, e);
+            }
+        }
+    }
+    
+    
+    private void syncSubscriptionGroupTopicConfig() {
+        String masterAddrBak = this.masterAddr;
+        if (masterAddrBak != null) {
+            try {
+                SubscriptionGroupTopicWrapper subscriptionGroupTopicWrapper = 
+                        this.brokerController.getBrokerOuterAPI().getAllSubscriptionGroupTopicConfig(masterAddrBak);
+                if (!this.brokerController.getSubscriptionGroupTopicManager().getDataVersion()
+                        .equals(subscriptionGroupTopicWrapper.getDataVersion())) {
+                    SubscriptionGroupTopicManager subscriptionGroupTopicManager = this.brokerController.getSubscriptionGroupTopicManager();
+                    subscriptionGroupTopicManager.getDataVersion().assignNewOne(subscriptionGroupTopicWrapper.getDataVersion());
+                    subscriptionGroupTopicManager.getSubscriptionGroupTopicTable().clear();
+                    subscriptionGroupTopicManager.getSubscriptionGroupTopicTable().putAll(subscriptionGroupTopicWrapper.getSubscriptionGroupTopicTable());
+                    subscriptionGroupTopicManager.persist();
+                    log.info("Update salve subscriptionGroupTpoic info from master {}",masterAddrBak);
+                }
+            } catch (Exception e) {
+                log.error("syncSubscriptionGroupTopicConfig Exception, {}", masterAddrBak, e);
             }
         }
     }

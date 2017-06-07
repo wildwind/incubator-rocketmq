@@ -1172,9 +1172,11 @@ public class MQClientInstance {
 
         topicSubscriptionData.getConsumerDataSet().add(consumerData);
         
-
+        System.out.println("before sendAddOrUpdateTopicSubscriptionInfoToAllBroker"+topics+group);
+        
         Iterator<Entry<String, HashMap<Long, String>>> it = this.brokerAddrTable.entrySet().iterator();
         while (it.hasNext()) {
+            System.out.println("before sendAddOrUpdateTopicSubscriptionInfoToAllBroker"+topics+group);
             Entry<String, HashMap<Long, String>> entry = it.next();
             String brokerName = entry.getKey();
             HashMap<Long, String> oneTable = entry.getValue();
@@ -1188,6 +1190,7 @@ public class MQClientInstance {
                         }
 
                         try {
+                            System.err.println(addr+topicSubscriptionData.toString());
                             this.mQClientAPIImpl.addOrUpdateTopicSubcription(addr, topicSubscriptionData, 30000);
                         } catch (Exception e) {
                             if (this.isBrokerInNameServer(addr)) {

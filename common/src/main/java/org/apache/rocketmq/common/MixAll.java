@@ -455,4 +455,8 @@ public class MixAll {
         }
         return result;
     }
+    
+    public static boolean isRetryTopic(String topic) {
+        return topic.startsWith(RETRY_GROUP_TOPIC_PREFIX, 0);
+    }
 }

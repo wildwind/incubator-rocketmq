@@ -74,6 +74,7 @@ import org.apache.rocketmq.common.protocol.body.QueryConsumeTimeSpanBody;
 import org.apache.rocketmq.common.protocol.body.QueryCorrectionOffsetBody;
 import org.apache.rocketmq.common.protocol.body.QueueTimeSpan;
 import org.apache.rocketmq.common.protocol.body.ResetOffsetBody;
+import org.apache.rocketmq.common.protocol.body.SubscriptionGroupTopicWrapper;
 import org.apache.rocketmq.common.protocol.body.SubscriptionGroupWrapper;
 import org.apache.rocketmq.common.protocol.body.TopicConfigSerializeWrapper;
 import org.apache.rocketmq.common.protocol.body.TopicList;
@@ -2025,11 +2026,11 @@ public class MQClientAPIImpl {
         return configMap;
     }
     //XXX add by wildwind for topic
-    public void addOrUpdateTopicSubcription(//
+    public int addOrUpdateTopicSubcription(//
             final String addr, //
             final TopicSubscriptionData topicSubscriptionData, //
             final long timeoutMillis//
-    ) throws RemotingException, MQBrokerException, InterruptedException {
+    ) throws RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException, InterruptedException, MQBrokerException {
         RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.UPDATE_AND_CREATE_TOPIC_SUBSCRIPTION, null);
 
         request.setBody(topicSubscriptionData.encode());
@@ -2037,7 +2038,7 @@ public class MQClientAPIImpl {
         assert response != null;
         switch (response.getCode()) {
             case ResponseCode.SUCCESS: {
-                return;
+                return 1;
             }
             default:
                 break;
@@ -2045,4 +2046,21 @@ public class MQClientAPIImpl {
 
         throw new MQBrokerException(response.getCode(), response.getRemark());
     }
+    
+    public SubscriptionGroupTopicWrapper getAllSubscriptionGroupTopic(final String brokerAddr, long timeoutMillis) 
+            throws RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException, InterruptedException, MQBrokerException {
+        RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_ALL_SUBSCRIPTIONGROUPTOPIC_CONFIG, null);
+        RemotingCommand response = this.remotingClient.invokeSync(brokerAddr, request, timeoutMillis);
+        assert response != null;
+        switch (response.getCode()) {
+            case ResponseCode.SUCCESS: {
+                    return SubscriptionGroupTopicWrapper.decode(response.getBody(), SubscriptionGroupTopicWrapper.class);
+                }
+                default:
+                    break;
+        }
+
+        throw new MQBrokerException(response.getCode(), response.getRemark());
+    }
+    
 }

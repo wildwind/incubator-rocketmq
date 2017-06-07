@@ -16,8 +16,6 @@
  */
 package org.apache.rocketmq.broker.processor;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -29,6 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.rocketmq.broker.BrokerController;
 import org.apache.rocketmq.broker.client.ClientChannelInfo;
 import org.apache.rocketmq.broker.client.ConsumerGroupInfo;
@@ -91,6 +90,7 @@ import org.apache.rocketmq.common.protocol.header.SearchOffsetResponseHeader;
 import org.apache.rocketmq.common.protocol.header.ViewBrokerStatsDataRequestHeader;
 import org.apache.rocketmq.common.protocol.header.filtersrv.RegisterFilterServerRequestHeader;
 import org.apache.rocketmq.common.protocol.header.filtersrv.RegisterFilterServerResponseHeader;
+import org.apache.rocketmq.common.protocol.heartbeat.ConsumerData;
 import org.apache.rocketmq.common.protocol.heartbeat.SubscriptionData;
 import org.apache.rocketmq.common.protocol.topic.TopicSubscriptionData;
 import org.apache.rocketmq.common.stats.StatsItem;
@@ -107,6 +107,9 @@ import org.apache.rocketmq.store.DefaultMessageStore;
 import org.apache.rocketmq.store.SelectMappedBufferResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 
 public class AdminBrokerProcessor implements NettyRequestProcessor {
     private static final Logger log = LoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
@@ -193,6 +196,8 @@ public class AdminBrokerProcessor implements NettyRequestProcessor {
                 return fetchAllConsumeStatsInBroker(ctx, request);
             case RequestCode.UPDATE_AND_CREATE_TOPIC_SUBSCRIPTION:
                 return this.addOrUpdateTopicSubcription(ctx, request);
+            case RequestCode.GET_ALL_SUBSCRIPTIONGROUPTOPIC_CONFIG:
+                return this.getAllSubscriptionGroupTopic(ctx, request);
             default:
                 break;
         }
@@ -1275,41 +1280,66 @@ public class AdminBrokerProcessor implements NettyRequestProcessor {
     }
     
     //XXX wildwind for updateAndCreateTopicSubscription
-    public RemotingCommand addOrUpdateTopicSubcription(ChannelHandlerContext ctx, RemotingCommand request)
+    private RemotingCommand addOrUpdateTopicSubcription(ChannelHandlerContext ctx, RemotingCommand request)
            throws RemotingCommandException {
         RemotingCommand response = RemotingCommand.createResponseCommand(null);
         TopicSubscriptionData topicSubscriptionData = TopicSubscriptionData.decode(request.getBody(), TopicSubscriptionData.class);
         
-
-//        for (ConsumerData data : topicSubscriptionData.getConsumerDataSet()) {
-//            SubscriptionGroupConfig subscriptionGroupConfig =
-//                this.brokerController.getSubscriptionGroupManager().findSubscriptionGroupConfig(
-//                    data.getGroupName());
-//            if (null != subscriptionGroupConfig) {
-//                int topicSysFlag = 0;
-//                if (data.isUnitMode()) {
-//                    topicSysFlag = TopicSysFlag.buildSysFlag(false, true);
-//                }
-//                String newTopic = MixAll.getRetryTopic(data.getGroupName());
-//                this.brokerController.getTopicConfigManager().createTopicInSendMessageBackMethod(
-//                    newTopic,
-//                    subscriptionGroupConfig.getRetryQueueNums(),
-//                    PermName.PERM_WRITE | PermName.PERM_READ, topicSysFlag);
-//            }
-//            
-//            
-//
-//            boolean success = this.brokerController.getConsumerManager().addOrUpdateTopicSubcription(data.getGroupName(),data.getSubscriptionDataSet());
-//
-//            if (success) {
-//                log.info("add topic subscription info success {}",
-//                    data.toString()
-//                );
-//            }
-//        }
+        for(ConsumerData data:topicSubscriptionData.getConsumerDataSet()) {
+            SubscriptionGroupConfig subscriptionGroupConfig =
+                  this.brokerController.getSubscriptionGroupManager().findSubscriptionGroupConfig(data.getGroupName());
+            if(null != subscriptionGroupConfig) {
+                Set<SubscriptionData> subscriptionDataSet = data.getSubscriptionDataSet();
+                Set<String> topics=new HashSet<String>();
+                for(SubscriptionData subscriptionData:subscriptionDataSet) {
+                    TopicConfig topicConfig = this.brokerController.getTopicConfigManager().selectTopicConfig(subscriptionData.getTopic());
+                    if(null != topicConfig){
+                        topics.add(topicConfig.getTopicName());
+                        
+                    }else{
+                        response.setCode(ResponseCode.SYSTEM_ERROR);
+                        response.setRemark(null);
+                        return response;
+                    }
+                }
+                
+                this.brokerController.getSubscriptionGroupTopicManager().updateSubscriptionCroupTopic(data.getGroupName(), topics);
+                
+            }else{
+                response.setCode(ResponseCode.SYSTEM_ERROR);
+                response.setRemark(null);
+                return response;
+            }
+        }
 
         response.setCode(ResponseCode.SUCCESS);
         response.setRemark(null);
+        return response;
+    }
+    
+    private RemotingCommand getAllSubscriptionGroupTopic(ChannelHandlerContext ctx, RemotingCommand request) throws RemotingCommandException {
+        final RemotingCommand response = RemotingCommand.createResponseCommand(null);
+        String content = this.brokerController.getSubscriptionGroupTopicManager().encode();
+        if (content != null && content.length() > 0) {
+            try {
+                response.setBody(content.getBytes(MixAll.DEFAULT_CHARSET));
+            } catch (UnsupportedEncodingException e) {
+                log.error("", e);
+
+                response.setCode(ResponseCode.SYSTEM_ERROR);
+                response.setRemark("UnsupportedEncodingException " + e);
+                return response;
+            }
+        } else {
+            log.error("No subscription group topic relation info in this broker, client:{} ", ctx.channel().remoteAddress());
+            response.setCode(ResponseCode.SYSTEM_ERROR);
+            response.setRemark("No subscription group topic relation info in this broker");
+            return response;
+        }
+
+        response.setCode(ResponseCode.SUCCESS);
+        response.setRemark(null);
+
         return response;
     }
 

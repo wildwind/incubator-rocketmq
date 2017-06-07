@@ -42,10 +42,12 @@ import org.apache.rocketmq.common.protocol.body.KVTable;
 import org.apache.rocketmq.common.protocol.body.ProducerConnection;
 import org.apache.rocketmq.common.protocol.body.ProducerGroup;
 import org.apache.rocketmq.common.protocol.body.QueueTimeSpan;
+import org.apache.rocketmq.common.protocol.body.SubscriptionGroupTopicWrapper;
 import org.apache.rocketmq.common.protocol.body.SubscriptionGroupWrapper;
 import org.apache.rocketmq.common.protocol.body.TopicConfigSerializeWrapper;
 import org.apache.rocketmq.common.protocol.body.TopicList;
 import org.apache.rocketmq.common.protocol.route.TopicRouteData;
+import org.apache.rocketmq.common.protocol.topic.TopicSubscriptionData;
 import org.apache.rocketmq.common.subscription.SubscriptionGroupConfig;
 import org.apache.rocketmq.remoting.exception.RemotingCommandException;
 import org.apache.rocketmq.remoting.exception.RemotingConnectException;
@@ -256,6 +258,11 @@ public interface MQAdminExt extends MQAdmin {
         RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException,
         MQClientException, UnsupportedEncodingException;
 
-    void addOrUpdateTopicSubscriptionInfoToAllBroker(Set<String> topics, String group) throws InterruptedException,
-            RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException, MQBrokerException;
+    void addOrUpdateTopicSubscriptionInfoToAllBroker(final String brokerAddr,TopicSubscriptionData topicSubscriptionData) throws InterruptedException,
+        RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException, MQBrokerException;
+    
+    SubscriptionGroupTopicWrapper getAllSubscriptionGroupTopic(final String brokerAddr, long timeoutMillis) throws RemotingConnectException, 
+        RemotingSendRequestException, RemotingTimeoutException, InterruptedException, MQBrokerException;
+    
+    
 }
