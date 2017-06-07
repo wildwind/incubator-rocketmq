@@ -536,7 +536,7 @@ public class BrokerController {
         return subscriptionGroupManager;
     }
     
-    public SubscriptionGroupTopicManager getSubscriptionGroupTopicManager(){
+    public SubscriptionGroupTopicManager getSubscriptionGroupTopicManager() {
         return subscriptionGroupTopicManager;
     }
 

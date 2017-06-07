@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.rocketmq.broker.subscription;
 
 import java.util.Iterator;
@@ -10,7 +27,6 @@ import org.apache.rocketmq.broker.BrokerPathConfigHelper;
 import org.apache.rocketmq.common.ConfigManager;
 import org.apache.rocketmq.common.DataVersion;
 import org.apache.rocketmq.common.constant.LoggerName;
-import org.apache.rocketmq.common.subscription.SubscriptionGroupConfig;
 import org.apache.rocketmq.remoting.protocol.RemotingSerializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +45,10 @@ public class SubscriptionGroupTopicManager extends ConfigManager {
     }
     
     public SubscriptionGroupTopicManager(BrokerController brokerController) {
-        this.brokerController=brokerController;
+        this.brokerController = brokerController;
     }
 
-    public void updateSubscriptionCroupTopic(String groupName,Set<String> topics){
+    public void updateSubscriptionCroupTopic(String groupName,Set<String> topics) {
         Set<String> old = this.subscriptionGroupTopicTable.put(groupName, topics);
         if (old != null) {
             log.info("update subscription group topic relation info config, group: {} old: {} new: {}",groupName, old, topics);
@@ -44,7 +60,7 @@ public class SubscriptionGroupTopicManager extends ConfigManager {
         this.persist();
     }
     
-    public Set<String> selectSubscriptionGroupTopics(String groupName){
+    public Set<String> selectSubscriptionGroupTopics(String groupName) {
         return this.subscriptionGroupTopicTable.get(groupName);
     }
     @Override

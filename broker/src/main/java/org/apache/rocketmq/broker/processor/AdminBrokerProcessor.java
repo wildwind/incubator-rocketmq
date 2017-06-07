@@ -1285,18 +1285,18 @@ public class AdminBrokerProcessor implements NettyRequestProcessor {
         RemotingCommand response = RemotingCommand.createResponseCommand(null);
         TopicSubscriptionData topicSubscriptionData = TopicSubscriptionData.decode(request.getBody(), TopicSubscriptionData.class);
         
-        for(ConsumerData data:topicSubscriptionData.getConsumerDataSet()) {
+        for (ConsumerData data:topicSubscriptionData.getConsumerDataSet()) {
             SubscriptionGroupConfig subscriptionGroupConfig =
                   this.brokerController.getSubscriptionGroupManager().findSubscriptionGroupConfig(data.getGroupName());
-            if(null != subscriptionGroupConfig) {
+            if (null != subscriptionGroupConfig) {
                 Set<SubscriptionData> subscriptionDataSet = data.getSubscriptionDataSet();
-                Set<String> topics=new HashSet<String>();
-                for(SubscriptionData subscriptionData:subscriptionDataSet) {
+                Set<String> topics = new HashSet<String>();
+                for (SubscriptionData subscriptionData:subscriptionDataSet) {
                     TopicConfig topicConfig = this.brokerController.getTopicConfigManager().selectTopicConfig(subscriptionData.getTopic());
-                    if(null != topicConfig){
+                    if (null != topicConfig) {
                         topics.add(topicConfig.getTopicName());
                         
-                    }else{
+                    } else {
                         response.setCode(ResponseCode.SYSTEM_ERROR);
                         response.setRemark(null);
                         return response;
@@ -1305,7 +1305,7 @@ public class AdminBrokerProcessor implements NettyRequestProcessor {
                 
                 this.brokerController.getSubscriptionGroupTopicManager().updateSubscriptionCroupTopic(data.getGroupName(), topics);
                 
-            }else{
+            } else {
                 response.setCode(ResponseCode.SYSTEM_ERROR);
                 response.setRemark(null);
                 return response;

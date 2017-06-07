@@ -146,7 +146,7 @@ public class PullMessageProcessor implements NettyRequestProcessor {
         if (this.brokerController.getBrokerConfig().isGroupTopicCheck()) {
 
             Set<String> topics = this.brokerController.getSubscriptionGroupTopicManager().selectSubscriptionGroupTopics(requestHeader.getConsumerGroup());
-            if( null == topics){
+            if (null == topics) {
                 LOG.error("The subscriptionGroup {} topics {} relation info not exist ",requestHeader.getConsumerGroup(),requestHeader.getTopic());
                 response.setCode(ResponseCode.TOPIC_SUBSCRIPITONGROUP_NOT_EXIST);
                 response.setRemark(String.format("subscription [%s] topic[%s]  relation info not exist, apply first please! %s", 
@@ -162,7 +162,7 @@ public class PullMessageProcessor implements NettyRequestProcessor {
             
             boolean groupTopicCheck = topics.contains(checkTopic);
             
-            if(!groupTopicCheck) {
+            if (!groupTopicCheck) {
                 LOG.error("The subscriptionGroup {} topics {} relation info not exist ",requestHeader.getConsumerGroup(),requestHeader.getTopic());
                 response.setCode(ResponseCode.TOPIC_SUBSCRIPITONGROUP_NOT_EXIST);
                 response.setRemark(String.format("subscription [%s] topic[%s]  relation info not exist, apply first please! %s", 

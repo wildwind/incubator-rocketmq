@@ -2054,10 +2054,10 @@ public class MQClientAPIImpl {
         assert response != null;
         switch (response.getCode()) {
             case ResponseCode.SUCCESS: {
-                    return SubscriptionGroupTopicWrapper.decode(response.getBody(), SubscriptionGroupTopicWrapper.class);
-                }
-                default:
-                    break;
+                return SubscriptionGroupTopicWrapper.decode(response.getBody(), SubscriptionGroupTopicWrapper.class);
+            }
+            default:
+                break;
         }
 
         throw new MQBrokerException(response.getCode(), response.getRemark());

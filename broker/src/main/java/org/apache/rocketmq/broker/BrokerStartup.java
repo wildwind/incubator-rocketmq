@@ -198,7 +198,7 @@ public class BrokerStartup {
 
             boolean initResult = controller.initialize();
             if (!initResult) {
-                System.out.println("broker initialize fail!");
+                System.err.println("broker initialize fail!");
                 controller.shutdown();
                 System.exit(-3);
             }
@@ -222,7 +222,7 @@ public class BrokerStartup {
                 }
             }, "ShutdownHook"));
             
-            System.out.println("broker start success!");
+            System.err.println("broker start success!");
             
             return controller;
         } catch (Throwable e) {

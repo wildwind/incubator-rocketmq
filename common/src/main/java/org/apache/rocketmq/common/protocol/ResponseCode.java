@@ -70,5 +70,5 @@ public class ResponseCode extends RemotingSysResponseCode {
 
     public static final int NO_MESSAGE = 208;
     
-    public static final int TOPIC_SUBSCRIPITONGROUP_NOT_EXIST=301;
+    public static final int TOPIC_SUBSCRIPITONGROUP_NOT_EXIST = 301;
 }

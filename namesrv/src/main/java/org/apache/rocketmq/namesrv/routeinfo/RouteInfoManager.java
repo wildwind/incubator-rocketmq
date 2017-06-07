@@ -62,7 +62,7 @@ public class RouteInfoManager {
         this.clusterAddrTable = new HashMap<String, Set<String>>(32);
         this.brokerLiveTable = new HashMap<String, BrokerLiveInfo>(256);
         this.filterServerTable = new HashMap<String, List<String>>(256);
-        this.offLineBrokerList=new HashMap<String,BrokerData>(128);
+        this.offLineBrokerList = new HashMap<String,BrokerData>(128);
     }
 
     public byte[] getAllClusterInfo() {
@@ -752,7 +752,7 @@ public class RouteInfoManager {
     private String handleOfflineBroker(String brokerName,Long brokerId,String brokerAddr) {
         BrokerData allBrokerData = this.offLineBrokerList.get(brokerName);
         if (null == allBrokerData) {
-            allBrokerData=new BrokerData();
+            allBrokerData = new BrokerData();
             allBrokerData.setBrokerName(brokerName);
             HashMap<Long, String> allBrokerAddrs = new HashMap<Long, String>();
             allBrokerData.setBrokerAddrs(allBrokerAddrs);
@@ -766,18 +766,18 @@ public class RouteInfoManager {
             BrokerData allBrokerData = this.offLineBrokerList.get(brokerName);
             if (allBrokerData != null) {
                 Iterator<Entry<Long, String>> it = allBrokerData.getBrokerAddrs().entrySet().iterator();
-                while(it.hasNext()) {
-                    Entry<Long, String> entry=it.next();
+                while (it.hasNext()) {
+                    Entry<Long, String> entry = it.next();
                     String address = entry.getValue();
                     if (brokerAddr.equals(address)) {
                         it.remove();
                     }
                 }
-                if(allBrokerData.getBrokerAddrs().isEmpty()) {
+                if (allBrokerData.getBrokerAddrs().isEmpty()) {
                     offLineBrokerList.remove(brokerName);
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error("handleOnlineBroker Exception", e);
         }
         return 0;
