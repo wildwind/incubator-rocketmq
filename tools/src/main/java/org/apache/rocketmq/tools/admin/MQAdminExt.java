@@ -41,6 +41,7 @@ import org.apache.rocketmq.common.protocol.body.GroupList;
 import org.apache.rocketmq.common.protocol.body.KVTable;
 import org.apache.rocketmq.common.protocol.body.ProducerConnection;
 import org.apache.rocketmq.common.protocol.body.ProducerGroup;
+import org.apache.rocketmq.common.protocol.body.QueryConsumeQueueResponseBody;
 import org.apache.rocketmq.common.protocol.body.QueueTimeSpan;
 import org.apache.rocketmq.common.protocol.body.SubscriptionGroupTopicWrapper;
 import org.apache.rocketmq.common.protocol.body.SubscriptionGroupWrapper;
@@ -257,12 +258,32 @@ public interface MQAdminExt extends MQAdmin {
     Map<String, Properties> getNameServerConfig(final List<String> nameServers) throws InterruptedException,
         RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException,
         MQClientException, UnsupportedEncodingException;
+    
+    /**
+     * query consume queue data
+     *
+     * @param brokerAddr broker ip address
+     * @param topic topic
+     * @param queueId id of queue
+     * @param index start offset
+     * @param count how many
+     * @param consumerGroup group
+     * @return
+     * @throws InterruptedException
+     * @throws RemotingTimeoutException
+     * @throws RemotingSendRequestException
+     * @throws RemotingConnectException
+     * @throws MQClientException
+     */
+    QueryConsumeQueueResponseBody queryConsumeQueue(final String brokerAddr,
+                                            final String topic, final int queueId,
+                                            final long index, final int count, final String consumerGroup)
+        throws InterruptedException, RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException, MQClientException;
 
     void addOrUpdateTopicSubscriptionInfoToAllBroker(final String brokerAddr,TopicSubscriptionData topicSubscriptionData) throws InterruptedException,
         RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException, MQBrokerException;
     
     SubscriptionGroupTopicWrapper getAllSubscriptionGroupTopic(final String brokerAddr, long timeoutMillis) throws RemotingConnectException, 
         RemotingSendRequestException, RemotingTimeoutException, InterruptedException, MQBrokerException;
-    
     
 }

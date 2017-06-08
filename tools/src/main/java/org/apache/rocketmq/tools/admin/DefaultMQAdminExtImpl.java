@@ -65,6 +65,7 @@ import org.apache.rocketmq.common.protocol.body.GroupList;
 import org.apache.rocketmq.common.protocol.body.KVTable;
 import org.apache.rocketmq.common.protocol.body.ProducerConnection;
 import org.apache.rocketmq.common.protocol.body.ProducerGroup;
+import org.apache.rocketmq.common.protocol.body.QueryConsumeQueueResponseBody;
 import org.apache.rocketmq.common.protocol.body.QueueTimeSpan;
 import org.apache.rocketmq.common.protocol.body.SubscriptionGroupTopicWrapper;
 import org.apache.rocketmq.common.protocol.body.SubscriptionGroupWrapper;
@@ -988,6 +989,14 @@ public class DefaultMQAdminExtImpl implements MQAdminExt, MQAdminExtInner {
     }
 
     @Override
+    public QueryConsumeQueueResponseBody queryConsumeQueue(String brokerAddr, String topic, int queueId, long index, int count, String consumerGroup)
+            throws InterruptedException, RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException, MQClientException {
+            return this.mqClientInstance.getMQClientAPIImpl().queryConsumeQueue(
+                brokerAddr, topic, queueId, index, count, consumerGroup, timeoutMillis
+            );
+        }
+    
+    @Override
     public ProducerGroup getAllProducerGroup(String brokerAddr, long timeoutMillis) throws InterruptedException,
         RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException, MQBrokerException {
         return this.mqClientInstance.getMQClientAPIImpl().getAllProducerGroup(brokerAddr, timeoutMillis);
@@ -1000,10 +1009,9 @@ public class DefaultMQAdminExtImpl implements MQAdminExt, MQAdminExtInner {
         this.mqClientInstance.getMQClientAPIImpl().addOrUpdateTopicSubcription(brokerAddr, topicSubscriptionData, timeoutMillis);
     }
     
+    @Override
     public SubscriptionGroupTopicWrapper getAllSubscriptionGroupTopic(final String brokerAddr, long timeoutMillis) throws RemotingConnectException, 
         RemotingSendRequestException, RemotingTimeoutException, InterruptedException, MQBrokerException {
         return this.mqClientInstance.getMQClientAPIImpl().getAllSubscriptionGroupTopic(brokerAddr, timeoutMillis);
     }
-    
-    
 }

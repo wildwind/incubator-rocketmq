@@ -68,6 +68,8 @@ public class RequestCode {
 
     public static final int GET_ALL_DELAY_OFFSET = 45;
 
+    public static final int CHECK_CLIENT_CONFIG = 46;
+
     public static final int PUT_KV_CONFIG = 100;
 
     public static final int GET_KV_CONFIG = 101;
@@ -160,9 +162,14 @@ public class RequestCode {
      * get config from name server
      */
     public static final int GET_NAMESRV_CONFIG = 319;
+    public static final int SEND_BATCH_MESSAGE = 320;
+    public static final int QUERY_CONSUME_QUEUE = 321;
+
     
     
     public static final int GET_ALL_PRODUCER_GROUP = 2011;
     public static final int UPDATE_AND_CREATE_TOPIC_SUBSCRIPTION = 2012;
     public static final int GET_ALL_SUBSCRIPTIONGROUPTOPIC_CONFIG = 2013;
+
+
 }

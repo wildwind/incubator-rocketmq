@@ -42,6 +42,7 @@ import org.apache.rocketmq.common.protocol.body.GroupList;
 import org.apache.rocketmq.common.protocol.body.KVTable;
 import org.apache.rocketmq.common.protocol.body.ProducerConnection;
 import org.apache.rocketmq.common.protocol.body.ProducerGroup;
+import org.apache.rocketmq.common.protocol.body.QueryConsumeQueueResponseBody;
 import org.apache.rocketmq.common.protocol.body.QueueTimeSpan;
 import org.apache.rocketmq.common.protocol.body.SubscriptionGroupTopicWrapper;
 import org.apache.rocketmq.common.protocol.body.SubscriptionGroupWrapper;
@@ -492,7 +493,14 @@ public class DefaultMQAdminExt extends ClientConfig implements MQAdminExt {
         return this.defaultMQAdminExtImpl.getNameServerConfig(nameServers);
     }
 
-
+    @Override
+    public QueryConsumeQueueResponseBody queryConsumeQueue(String brokerAddr, String topic, int queueId, long index, int count, String consumerGroup)
+        throws InterruptedException, RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException, MQClientException {
+        return this.defaultMQAdminExtImpl.queryConsumeQueue(
+            brokerAddr, topic, queueId, index, count, consumerGroup
+        );
+    }
+    
     @Override
     public SubscriptionGroupTopicWrapper getAllSubscriptionGroupTopic(String brokerAddr, long timeoutMillis)
             throws RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException,
@@ -507,6 +515,5 @@ public class DefaultMQAdminExt extends ClientConfig implements MQAdminExt {
         this.defaultMQAdminExtImpl.addOrUpdateTopicSubscriptionInfoToAllBroker(brokerAddr, topicSubscriptionData);
         
     }
-
 
 }
