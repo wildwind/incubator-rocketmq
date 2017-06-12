@@ -1314,7 +1314,7 @@ public class AdminBrokerProcessor implements NettyRequestProcessor {
                         
                     } else {
                         response.setCode(ResponseCode.SYSTEM_ERROR);
-                        response.setRemark(null);
+                        response.setRemark("Topic is not exists!");
                         return response;
                     }
                 }
@@ -1323,7 +1323,7 @@ public class AdminBrokerProcessor implements NettyRequestProcessor {
                 
             } else {
                 response.setCode(ResponseCode.SYSTEM_ERROR);
-                response.setRemark(null);
+                response.setRemark("SubscriptionGroup is not exists!");
                 return response;
             }
         }
