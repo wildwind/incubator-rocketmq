@@ -991,10 +991,10 @@ public class DefaultMQAdminExtImpl implements MQAdminExt, MQAdminExtInner {
     @Override
     public QueryConsumeQueueResponseBody queryConsumeQueue(String brokerAddr, String topic, int queueId, long index, int count, String consumerGroup)
             throws InterruptedException, RemotingTimeoutException, RemotingSendRequestException, RemotingConnectException, MQClientException {
-            return this.mqClientInstance.getMQClientAPIImpl().queryConsumeQueue(
+        return this.mqClientInstance.getMQClientAPIImpl().queryConsumeQueue(
                 brokerAddr, topic, queueId, index, count, consumerGroup, timeoutMillis
             );
-        }
+    }
     
     @Override
     public ProducerGroup getAllProducerGroup(String brokerAddr, long timeoutMillis) throws InterruptedException,
