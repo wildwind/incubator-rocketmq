@@ -24,6 +24,7 @@ import io.openmessaging.exception.OMSRuntimeException;
 import io.openmessaging.rocketmq.config.ClientConfig;
 import io.openmessaging.rocketmq.domain.ConsumeRequest;
 import io.openmessaging.rocketmq.utils.BeanUtils;
+import io.openmessaging.rocketmq.utils.Constant;
 import io.openmessaging.rocketmq.utils.OMSUtil;
 import org.apache.rocketmq.client.consumer.DefaultMQPullConsumer;
 import org.apache.rocketmq.client.consumer.MQPullConsumer;
@@ -36,6 +37,7 @@ import org.apache.rocketmq.client.impl.consumer.ProcessQueue;
 import org.apache.rocketmq.client.log.ClientLogger;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.message.MessageQueue;
+import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.slf4j.Logger;
 
 public class PullConsumerImpl implements PullConsumer {
@@ -117,6 +119,26 @@ public class PullConsumerImpl implements PullConsumer {
                 this.localMessageCache.startup();
             } catch (MQClientException e) {
                 throw new OMSRuntimeException("-1", e);
+            }
+            
+            // XXX for user password check
+            String userName = this.properties.getString(Constant.USERNAME);
+            String passWord = this.properties.getString(Constant.PASSWORD);
+            if (null != userName && null != passWord) {
+                try {
+                    String checkPassWord = this.rocketmqPullConsumer.getDefaultMQPullConsumerImpl().getmQClientFactory()
+                            .getMQClientAPIImpl().getKVConfigValue(Constant.USERNAMESPACE, userName, Constant.TIMEOUTMILLIS);
+                    if(!passWord.equals(checkPassWord)){
+                        this.rocketmqPullConsumer.shutdown();
+                        throw new OMSRuntimeException("-1", "passWord wrong");
+                    }
+                } catch (RemotingException | MQClientException | InterruptedException e) {
+                    this.rocketmqPullConsumer.shutdown();
+                    throw new OMSRuntimeException("-1", "get paasWord from ns wrong");
+                }
+            } else {
+                this.rocketmqPullConsumer.shutdown();
+                throw new OMSRuntimeException("-1", "userName or passWord not provide");
             }
         }
         this.started = true;

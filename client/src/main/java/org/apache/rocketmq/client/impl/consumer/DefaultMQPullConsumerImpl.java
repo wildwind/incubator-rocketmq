@@ -710,4 +710,12 @@ public class DefaultMQPullConsumerImpl implements MQConsumerInner {
     public RebalanceImpl getRebalanceImpl() {
         return rebalanceImpl;
     }
+    
+    public MQClientInstance getmQClientFactory() {
+        return mQClientFactory;
+    }
+
+    public void setmQClientFactory(MQClientInstance mQClientFactory) {
+        this.mQClientFactory = mQClientFactory;
+    }
 }
