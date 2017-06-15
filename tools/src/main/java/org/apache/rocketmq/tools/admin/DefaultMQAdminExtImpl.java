@@ -195,8 +195,14 @@ public class DefaultMQAdminExtImpl implements MQAdminExt, MQAdminExtInner {
 
     @Override
     public TopicConfig examineTopicConfig(String addr, String topic) {
-        // TODO Auto-generated method stub
         return null;
+    }
+    
+    @Override
+    public Map<String,TopicConfig> examineTopicConfigs(String addr) throws RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException, InterruptedException, MQBrokerException {
+        TopicConfigSerializeWrapper topicsWrapper = this.mqClientInstance.getMQClientAPIImpl().
+            getAllTopicConfig(addr, 3000);
+        return topicsWrapper.getTopicConfigTable();
     }
 
     @Override

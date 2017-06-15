@@ -77,6 +77,8 @@ public interface MQAdminExt extends MQAdmin {
     SubscriptionGroupConfig examineSubscriptionGroupConfig(final String addr, final String group);
 
     TopicConfig examineTopicConfig(final String addr, final String topic);
+    
+    public Map<String,TopicConfig> examineTopicConfigs(String addr) throws RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException, InterruptedException, MQBrokerException;
 
     TopicStatsTable examineTopicStats(final String topic) throws RemotingException, MQClientException, InterruptedException,
         MQBrokerException;

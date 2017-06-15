@@ -175,6 +175,12 @@ public class DefaultMQAdminExt extends ClientConfig implements MQAdminExt {
     public TopicConfig examineTopicConfig(String addr, String topic) {
         return defaultMQAdminExtImpl.examineTopicConfig(addr, topic);
     }
+    
+    @Override
+    public Map<String, TopicConfig> examineTopicConfigs(String addr) throws RemotingConnectException,
+        RemotingSendRequestException, RemotingTimeoutException, InterruptedException, MQBrokerException {
+        return defaultMQAdminExtImpl.examineTopicConfigs(addr);
+    }
 
     @Override
     public TopicStatsTable examineTopicStats(String topic) throws RemotingException, MQClientException, InterruptedException,
