@@ -27,6 +27,7 @@ import io.openmessaging.exception.OMSRuntimeException;
 import io.openmessaging.rocketmq.config.ClientConfig;
 import io.openmessaging.rocketmq.domain.NonStandardKeys;
 import io.openmessaging.rocketmq.utils.BeanUtils;
+import io.openmessaging.rocketmq.utils.Constant;
 import io.openmessaging.rocketmq.utils.OMSUtil;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.message.MessageExt;
+import org.apache.rocketmq.remoting.exception.RemotingException;
 
 public class PushConsumerImpl implements PushConsumer {
     private final DefaultMQPushConsumer rocketmqPushConsumer;
@@ -114,6 +116,27 @@ public class PushConsumerImpl implements PushConsumer {
             } catch (MQClientException e) {
                 throw new OMSRuntimeException("-1", e);
             }
+            
+            // XXX for user password check
+            String userName = this.properties.getString(Constant.USERNAME);
+            String passWord = this.properties.getString(Constant.PASSWORD);
+            if (null != userName && null != passWord) {
+                try {
+                    String checkPassWord = this.rocketmqPushConsumer.getDefaultMQPushConsumerImpl().getmQClientFactory()
+                            .getMQClientAPIImpl().getKVConfigValue(Constant.USERNAMESPACE, userName, Constant.TIMEOUTMILLIS);
+                    if(!passWord.equals(checkPassWord)){
+                        this.rocketmqPushConsumer.shutdown();
+                        throw new OMSRuntimeException("-1", "passWord wrong");
+                    }
+                } catch (RemotingException | MQClientException | InterruptedException e) {
+                    this.rocketmqPushConsumer.shutdown();
+                    throw new OMSRuntimeException("-1", "get paasWord from ns wrong");
+                }
+            } else {
+                this.rocketmqPushConsumer.shutdown();
+                throw new OMSRuntimeException("-1", "userName or passWord not provide");
+            }
+            
         }
         this.started = true;
     }
