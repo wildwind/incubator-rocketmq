@@ -127,8 +127,9 @@ public class PullConsumerImpl implements PullConsumer {
             if (null != userName && null != passWord) {
                 try {
                     String checkPassWord = this.rocketmqPullConsumer.getDefaultMQPullConsumerImpl().getmQClientFactory()
-                            .getMQClientAPIImpl().getKVConfigValue(Constant.USERNAMESPACE, userName, Constant.TIMEOUTMILLIS);
-                    if(!passWord.equals(checkPassWord)){
+                            .getMQClientAPIImpl()
+                            .getKVConfigValue(Constant.USERNAMESPACE, userName, Constant.TIMEOUTMILLIS);
+                    if (!passWord.equals(checkPassWord)) {
                         this.rocketmqPullConsumer.shutdown();
                         throw new OMSRuntimeException("-1", "passWord wrong");
                     }

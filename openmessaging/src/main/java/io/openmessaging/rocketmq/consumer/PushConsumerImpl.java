@@ -124,7 +124,7 @@ public class PushConsumerImpl implements PushConsumer {
                 try {
                     String checkPassWord = this.rocketmqPushConsumer.getDefaultMQPushConsumerImpl().getmQClientFactory()
                             .getMQClientAPIImpl().getKVConfigValue(Constant.USERNAMESPACE, userName, Constant.TIMEOUTMILLIS);
-                    if(!passWord.equals(checkPassWord)){
+                    if (!passWord.equals(checkPassWord)) {
                         this.rocketmqPushConsumer.shutdown();
                         throw new OMSRuntimeException("-1", "passWord wrong");
                     }

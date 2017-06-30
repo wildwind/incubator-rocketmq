@@ -25,7 +25,6 @@ import io.openmessaging.PropertyKeys;
 import io.openmessaging.ServiceLifecycle;
 import io.openmessaging.exception.OMSMessageFormatException;
 import io.openmessaging.exception.OMSNotSupportedException;
-import io.openmessaging.exception.OMSResourceNotExistException;
 import io.openmessaging.exception.OMSRuntimeException;
 import io.openmessaging.exception.OMSTimeOutException;
 import io.openmessaging.rocketmq.config.ClientConfig;
@@ -86,8 +85,9 @@ abstract class AbstractOMSProducer implements ServiceLifecycle, MessageFactory {
             if (null != userName && null != passWord) {
                 try {
                     String checkPassWord = this.rocketmqProducer.getDefaultMQProducerImpl().getmQClientFactory()
-                            .getMQClientAPIImpl().getKVConfigValue(Constant.USERNAMESPACE, userName, Constant.TIMEOUTMILLIS);
-                    if(!passWord.equals(checkPassWord)){
+                            .getMQClientAPIImpl()
+                            .getKVConfigValue(Constant.USERNAMESPACE, userName, Constant.TIMEOUTMILLIS);
+                    if (!passWord.equals(checkPassWord)) {
                         this.rocketmqProducer.shutdown();
                         throw new OMSRuntimeException("-1", "passWord wrong");
                     }
