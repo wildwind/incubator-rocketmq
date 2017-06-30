@@ -1433,7 +1433,7 @@ public class AdminBrokerProcessor implements NettyRequestProcessor {
         } finally {
             result.release();
         }
-
+        response.setBody(body.encode());
         return response;
     }
 }

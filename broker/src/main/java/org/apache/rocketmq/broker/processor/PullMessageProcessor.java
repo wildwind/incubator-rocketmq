@@ -151,29 +151,32 @@ public class PullMessageProcessor implements NettyRequestProcessor {
         
         if (this.brokerController.getBrokerConfig().isGroupTopicCheck()) {
 
-            Set<String> topics = this.brokerController.getSubscriptionGroupTopicManager().selectSubscriptionGroupTopics(requestHeader.getConsumerGroup());
-            if (null == topics) {
-                LOG.error("The subscriptionGroup {} topics {} relation info not exist ",requestHeader.getConsumerGroup(),requestHeader.getTopic());
-                response.setCode(ResponseCode.TOPIC_SUBSCRIPITONGROUP_NOT_EXIST);
-                response.setRemark(String.format("subscription [%s] topic[%s]  relation info not exist, apply first please! %s", 
-                         requestHeader.getSubscription(), requestHeader.getTopic(), FAQUrl.suggestTodo(FAQUrl.APPLY_TOPIC_URL)));
-                return response;
-            }
-            
-            String topic = requestHeader.getTopic();
-            String checkTopic = topic;
-            if (MixAll.isRetryTopic(topic)) {
-                checkTopic = topic.substring(MixAll.RETRY_GROUP_TOPIC_PREFIX.length());
-            }
-            
-            boolean groupTopicCheck = topics.contains(checkTopic);
-            
-            if (!groupTopicCheck) {
-                LOG.error("The subscriptionGroup {} topics {} relation info not exist ",requestHeader.getConsumerGroup(),requestHeader.getTopic());
-                response.setCode(ResponseCode.TOPIC_SUBSCRIPITONGROUP_NOT_EXIST);
-                response.setRemark(String.format("subscription [%s] topic[%s]  relation info not exist, apply first please! %s", 
-                         requestHeader.getSubscription(), requestHeader.getTopic(), FAQUrl.suggestTodo(FAQUrl.APPLY_TOPIC_URL)));
-                return response;
+            if (!MixAll.isInnerGroup(requestHeader.getConsumerGroup())) {
+                
+                Set<String> topics = this.brokerController.getSubscriptionGroupTopicManager().selectSubscriptionGroupTopics(requestHeader.getConsumerGroup());
+                if (null == topics) {
+                    LOG.error("The subscriptionGroup {} topics {} relation info not exist ",requestHeader.getConsumerGroup(),requestHeader.getTopic());
+                    response.setCode(ResponseCode.TOPIC_SUBSCRIPITONGROUP_NOT_EXIST);
+                    response.setRemark(String.format("subscription [%s] topic[%s]  relation info not exist, apply first please! %s", 
+                             requestHeader.getSubscription(), requestHeader.getTopic(), FAQUrl.suggestTodo(FAQUrl.APPLY_TOPIC_URL)));
+                    return response;
+                }
+                
+                String topic = requestHeader.getTopic();
+                String checkTopic = topic;
+                if (MixAll.isRetryTopic(topic)) {
+                    checkTopic = topic.substring(MixAll.RETRY_GROUP_TOPIC_PREFIX.length());
+                }
+                
+                boolean groupTopicCheck = topics.contains(checkTopic);
+                
+                if (!groupTopicCheck) {
+                    LOG.error("The subscriptionGroup {} topics {} relation info not exist ",requestHeader.getConsumerGroup(),requestHeader.getTopic());
+                    response.setCode(ResponseCode.TOPIC_SUBSCRIPITONGROUP_NOT_EXIST);
+                    response.setRemark(String.format("subscription [%s] topic[%s]  relation info not exist, apply first please! %s", 
+                             requestHeader.getSubscription(), requestHeader.getTopic(), FAQUrl.suggestTodo(FAQUrl.APPLY_TOPIC_URL)));
+                    return response;
+                }
             }
         }
         

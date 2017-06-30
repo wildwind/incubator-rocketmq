@@ -37,11 +37,13 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.rocketmq.common.annotation.ImportantField;
 import org.apache.rocketmq.common.help.FAQUrl;
 import org.slf4j.Logger;
@@ -88,6 +90,20 @@ public class MixAll {
     public static final String UNIQUE_MSG_QUERY_FLAG = "_UNIQUE_KEY_QUERY";
     public static final String DEFAULT_TRACE_REGION_ID = "DefaultRegion";
     public static final String CONSUME_CONTEXT_TYPE = "ConsumeContextType";
+    
+    public static List<String> innerGroup = new LinkedList<String>();
+    
+    static {
+        innerGroup.add(DEFAULT_CONSUMER_GROUP);
+        innerGroup.add(TOOLS_CONSUMER_GROUP);
+        innerGroup.add(FILTERSRV_CONSUMER_GROUP);
+        innerGroup.add(MONITOR_CONSUMER_GROUP);
+        innerGroup.add(SELF_TEST_CONSUMER_GROUP);
+        innerGroup.add(ONS_HTTP_PROXY_GROUP);
+        innerGroup.add(CID_ONSAPI_PERMISSION_GROUP);
+        innerGroup.add(CID_ONSAPI_OWNER_GROUP);
+        innerGroup.add(CID_ONSAPI_PULL_GROUP);
+    }
 
     public static String getWSAddr() {
         String wsDomainName = System.getProperty("rocketmq.namesrv.domain", DEFAULT_NAMESRV_ADDR_LOOKUP);
@@ -462,5 +478,12 @@ public class MixAll {
     
     public static boolean isRetryTopic(String topic) {
         return topic.startsWith(RETRY_GROUP_TOPIC_PREFIX, 0);
+    }
+    
+    public static boolean isInnerGroup(String subscriptionGroup) {
+        if (innerGroup.contains(subscriptionGroup)) {
+            return true;
+        }
+        return false;
     }
 }
