@@ -155,10 +155,10 @@ public class PullMessageProcessor implements NettyRequestProcessor {
                 
                 Set<String> topics = this.brokerController.getSubscriptionGroupTopicManager().selectSubscriptionGroupTopics(requestHeader.getConsumerGroup());
                 if (null == topics) {
-                    LOG.error("The subscriptionGroup {} topics {} relation info not exist ",requestHeader.getConsumerGroup(),requestHeader.getTopic());
+                    LOG.error("The subscriptionGroup {} topics {} relation info not exist",this.brokerController.getBrokerConfig().getBrokerIP1(),requestHeader.getConsumerGroup(),requestHeader.getTopic());
                     response.setCode(ResponseCode.TOPIC_SUBSCRIPITONGROUP_NOT_EXIST);
-                    response.setRemark(String.format("subscription [%s] topic[%s]  relation info not exist, apply first please! %s", 
-                             requestHeader.getSubscription(), requestHeader.getTopic(), FAQUrl.suggestTodo(FAQUrl.APPLY_TOPIC_URL)));
+                    response.setRemark(String.format("subscription [%s] topic[%s]  relation info not exist in broker[%s], apply first please! %s", 
+                             requestHeader.getSubscription(), requestHeader.getTopic(), this.brokerController.getBrokerConfig(),FAQUrl.suggestTodo(FAQUrl.APPLY_TOPIC_URL)));
                     return response;
                 }
                 
@@ -173,8 +173,8 @@ public class PullMessageProcessor implements NettyRequestProcessor {
                 if (!groupTopicCheck) {
                     LOG.error("The subscriptionGroup {} topics {} relation info not exist ",requestHeader.getConsumerGroup(),requestHeader.getTopic());
                     response.setCode(ResponseCode.TOPIC_SUBSCRIPITONGROUP_NOT_EXIST);
-                    response.setRemark(String.format("subscription [%s] topic[%s]  relation info not exist, apply first please! %s", 
-                             requestHeader.getSubscription(), requestHeader.getTopic(), FAQUrl.suggestTodo(FAQUrl.APPLY_TOPIC_URL)));
+                    response.setRemark(String.format("subscription [%s] topic[%s]  relation info not exist in broker[%s], apply first please! %s", 
+                             requestHeader.getSubscription(), requestHeader.getTopic(), this.brokerController.getBrokerConfig(),FAQUrl.suggestTodo(FAQUrl.APPLY_TOPIC_URL)));
                     return response;
                 }
             }
