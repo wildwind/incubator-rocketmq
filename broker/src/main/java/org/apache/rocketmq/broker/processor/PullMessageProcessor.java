@@ -166,16 +166,26 @@ public class PullMessageProcessor implements NettyRequestProcessor {
                 String checkTopic = topic;
                 if (MixAll.isRetryTopic(topic)) {
                     checkTopic = topic.substring(MixAll.RETRY_GROUP_TOPIC_PREFIX.length());
-                }
+                    if (!checkTopic.equals(requestHeader.getConsumerGroup())) {
+                        LOG.error("The retry topic {} is not equal the group {}", checkTopic,
+                                requestHeader.getConsumerGroup());
+                        response.setCode(ResponseCode.TOPIC_SUBSCRIPITONGROUP_NOT_EXIST);
+                        response.setRemark(String.format(
+                                "subscription [%s] topic[%s]  relation info not exist in broker[%s], apply first please! %s",
+                                requestHeader.getSubscription(), requestHeader.getTopic(),
+                                this.brokerController.getBrokerConfig(), FAQUrl.suggestTodo(FAQUrl.APPLY_TOPIC_URL)));
+                        return response;
+                    }
+                } else {
                 
-                boolean groupTopicCheck = topics.contains(checkTopic);
-                
-                if (!groupTopicCheck) {
-                    LOG.error("The subscriptionGroup {} topics {} relation info not exist ",requestHeader.getConsumerGroup(),requestHeader.getTopic());
-                    response.setCode(ResponseCode.TOPIC_SUBSCRIPITONGROUP_NOT_EXIST);
-                    response.setRemark(String.format("subscription [%s] topic[%s]  relation info not exist in broker[%s], apply first please! %s", 
-                             requestHeader.getSubscription(), requestHeader.getTopic(), this.brokerController.getBrokerConfig(),FAQUrl.suggestTodo(FAQUrl.APPLY_TOPIC_URL)));
-                    return response;
+                    boolean groupTopicCheck = topics.contains(checkTopic);
+                    if (!groupTopicCheck) {
+                        LOG.error("The subscriptionGroup {} topics {} relation info not exist ",requestHeader.getConsumerGroup(),requestHeader.getTopic());
+                        response.setCode(ResponseCode.TOPIC_SUBSCRIPITONGROUP_NOT_EXIST);
+                        response.setRemark(String.format("subscription [%s] topic[%s]  relation info not exist in broker[%s], apply first please! %s", 
+                                 requestHeader.getSubscription(), requestHeader.getTopic(), this.brokerController.getBrokerConfig(),FAQUrl.suggestTodo(FAQUrl.APPLY_TOPIC_URL)));
+                        return response;
+                    }
                 }
             }
         }
