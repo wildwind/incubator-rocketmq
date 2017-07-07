@@ -213,6 +213,11 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
      * Maximum amount of time in minutes a message may block the consuming thread.
      */
     private long consumeTimeout = 15;
+    
+    /**
+     * how to handle the message when consuming thread block timeout.
+     */
+    private ConsumerTimeoutType  consumerTimeouType = ConsumerTimeoutType.RETRY;
 
     /**
      * Default constructor.
@@ -631,4 +636,13 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
     public void setConsumeTimeout(final long consumeTimeout) {
         this.consumeTimeout = consumeTimeout;
     }
+    
+    public ConsumerTimeoutType getConsumerTimeouType() {
+        return consumerTimeouType;
+    }
+
+    public void setConsumerTimeouType(ConsumerTimeoutType consumerTimeouType) {
+        this.consumerTimeouType = consumerTimeouType;
+    }
+
 }

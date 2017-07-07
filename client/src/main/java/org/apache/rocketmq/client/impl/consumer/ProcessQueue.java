@@ -25,6 +25,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.apache.rocketmq.client.consumer.ConsumerTimeoutType;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.log.ClientLogger;
 import org.apache.rocketmq.common.message.MessageAccessor;
@@ -73,13 +75,16 @@ public class ProcessQueue {
             return;
         }
 
+        ConsumerTimeoutType consumerTimeoutType = pushConsumer.getConsumerTimeouType();
+                
         int loop = msgTreeMap.size() < 16 ? msgTreeMap.size() : 16;
         for (int i = 0; i < loop; i++) {
             MessageExt msg = null;
             try {
                 this.lockTreeMap.readLock().lockInterruptibly();
                 try {
-                    if (!msgTreeMap.isEmpty() && System.currentTimeMillis() - Long.parseLong(MessageAccessor.getConsumeStartTimeStamp(msgTreeMap.firstEntry().getValue())) > pushConsumer.getConsumeTimeout() * 60 * 1000) {
+                    if (!msgTreeMap.isEmpty() && System.currentTimeMillis() - Long.parseLong(MessageAccessor.getConsumeStartTimeStamp(msgTreeMap.firstEntry().getValue())) > pushConsumer.getConsumeTimeout() * 1000) {
+                        System.out.println("clean"+System.currentTimeMillis());
                         msg = msgTreeMap.firstEntry().getValue();
                     } else {
 
@@ -94,8 +99,16 @@ public class ProcessQueue {
 
             try {
 
-                pushConsumer.sendMessageBack(msg, 3);
-                log.info("send expire msg back. topic={}, msgId={}, storeHost={}, queueId={}, queueOffset={}", msg.getTopic(), msg.getMsgId(), msg.getStoreHost(), msg.getQueueId(), msg.getQueueOffset());
+                if (consumerTimeoutType == ConsumerTimeoutType.IGNORE) {
+                    //do nothing
+                } else if (consumerTimeoutType == ConsumerTimeoutType.WARN) {
+                    log.warn("message ignore. topic={}, msgId={}, storeHost={}, queueId={}, queueOffset={}",
+                            msg.getTopic(), msg.getMsgId(), msg.getStoreHost(), msg.getQueueId(), msg.getQueueOffset());
+                } else {
+                    pushConsumer.sendMessageBack(msg, 3);
+                    log.warn("send expire msg back. topic={}, msgId={}, storeHost={}, queueId={}, queueOffset={}",
+                            msg.getTopic(), msg.getMsgId(), msg.getStoreHost(), msg.getQueueId(), msg.getQueueOffset());
+                }
                 try {
                     this.lockTreeMap.writeLock().lockInterruptibly();
                     try {
@@ -112,6 +125,7 @@ public class ProcessQueue {
                 } catch (InterruptedException e) {
                     log.error("getExpiredMsg exception", e);
                 }
+                
             } catch (Exception e) {
                 log.error("send expired msg exception", e);
             }
