@@ -131,9 +131,11 @@ public class RouteInfoManager {
                     brokerData = new BrokerData(clusterName, brokerName, new HashMap<Long, String>());
                     this.brokerAddrTable.put(brokerName, brokerData);
                 }
+                
+                this.handleOnlineBroker(brokerName, brokerId, brokerAddr);
+                
                 String oldAddr = brokerData.getBrokerAddrs().put(brokerId, brokerAddr);
                 registerFirst = registerFirst || (null == oldAddr);
-                this.handleOnlineBroker(brokerName, brokerId, brokerAddr);
 
                 if (null != topicConfigWrapper //
                     && MixAll.MASTER_ID == brokerId) {
@@ -771,6 +773,17 @@ public class RouteInfoManager {
                     offLineBrokerList.remove(brokerName);
                 }
             }
+            
+            BrokerData brokerData = brokerAddrTable.get(brokerName);
+            Iterator<Entry<Long, String>> it = brokerData.getBrokerAddrs().entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<Long, String> entry = it.next();
+                String addrs = entry.getValue();
+                if (addrs != null && addrs.equals(brokerAddr)) {
+                    it.remove();
+                }
+            }
+            
         } catch (Exception e) {
             log.error("handleOnlineBroker Exception", e);
         }
