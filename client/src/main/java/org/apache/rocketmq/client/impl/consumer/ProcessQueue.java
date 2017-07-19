@@ -84,7 +84,6 @@ public class ProcessQueue {
                 this.lockTreeMap.readLock().lockInterruptibly();
                 try {
                     if (!msgTreeMap.isEmpty() && System.currentTimeMillis() - Long.parseLong(MessageAccessor.getConsumeStartTimeStamp(msgTreeMap.firstEntry().getValue())) > pushConsumer.getConsumeTimeout() * 1000) {
-                        System.out.println("clean"+System.currentTimeMillis());
                         msg = msgTreeMap.firstEntry().getValue();
                     } else {
 
