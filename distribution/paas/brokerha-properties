@@ -1,0 +1,2 @@
+namesrvAddr=10.4.120.64:9876
+checkMasterOfflineInterval=1000*10
